@@ -14,9 +14,9 @@
 Build **Poro** — the Poncho AI of trading card games.
 
 Poncho is a chat agent that content creators love because it can touch data ChatGPT and
-Claude can't: give it a TikTok handle and it finds that creator's top posts by views,
-transcribes the videos, and helps you write scripts in your own voice off the winning
-formats. Poro is that product, purpose-built for TCG players and creators — launching
+Claude can't: ask it for the top-performing videos in a niche or from specific creator
+handles, and it finds them with real view counts, transcribes the videos, and helps you
+write scripts in your own voice off the winning formats. Poro is that product, purpose-built for TCG players and creators — launching
 with **Riftbound** (Riot's League of Legends TCG) and architected so that any TCG
 (Magic, Pokémon, Yu-Gi-Oh!, One Piece, Lorcana) can be added without touching the core.
 
@@ -26,7 +26,7 @@ One chat box. A user should be able to say things like:
 - *"Write me a deck tech script for Master Yi in my voice — here are transcripts of my last 4 videos."*
 - *"What's the meta since the March ban list? What should I play at the Hartford regional?"*
 - *"What's this card worth, and is it trending up since Unleashed dropped?"*
-- *"Build me a legal Fury/Body Jinx list and explain the rune base."*
+- *"Build me a legal Jinx list and explain the rune base."*
 
 …and Poro answers with **real, current data** — live decklists, real view counts, real
 prices, real transcripts — not model memory. The agent reasons; deterministic tools
@@ -48,11 +48,16 @@ These are the walls. Inside them, run wide open — the *how* is entirely yours
    and for non-asset metadata, but always behind an adapter so they're swappable. Never
    build gameplay simulation or automated rules enforcement. The product must have a
    free tier. (Full policy details: `HANDOFF.md` §5.)
-2. **Scrape clean.** Social data comes only from third-party providers hitting public,
-   logged-out data (ScrapeCreators, Apify, EnsembleData — see `HANDOFF.md` §4). Never
-   log into a platform to scrape, never store downloaded media beyond transcription,
-   never run caption-scraping libraries naked from cloud IPs. Respect every published
-   rate limit (Scryfall ~10 req/s, YGOPRODeck 20 req/s + mandatory local caching, etc.).
+2. **Scrape clean.** Where an official API covers the need (YouTube Data API, Twitch
+   Helix, user-consented OAuth for a creator's own accounts), use it. Where none
+   exists (TikTok, Instagram), *scraped* social data comes only from third-party
+   providers hitting public, logged-out data (ScrapeCreators, Apify, EnsembleData —
+   see `HANDOFF.md` §4) — the same goes for any media downloaded for transcription
+   fallback; never self-download with yt-dlp-style tools from platforms that block it.
+   Never log into a platform to scrape, never store downloaded media beyond
+   transcription, never run caption-scraping libraries naked from cloud IPs. Respect
+   every published rate limit (Scryfall ~10 req/s, YGOPRODeck 20 req/s + mandatory
+   local caching, etc.).
 3. **Nothing game-specific outside its adapter.** The core knows "cards, decks, events,
    prices, creators, transcripts" as abstract concepts. Riftbound lives entirely in a
    Riftbound adapter. If adding Magic would require editing core code, the core is wrong.
@@ -80,7 +85,8 @@ These are the walls. Inside them, run wide open — the *how* is entirely yours
 Not "high quality." These five tests, each verified by a fresh-context sub-agent
 against the real running product — actual pixels, actual network responses:
 
-1. **The Cami test** (the screenshot workflow, end-to-end): Given 3 real Riftbound
+1. **The Cami test** (the originating creator workflow, end-to-end — named for the
+   creator whose viral post defined it; see `HANDOFF.md` §1): Given 3 real Riftbound
    creator handles (YouTube first — the dossier explains why), Poro returns each one's
    top 5 videos with real view/like counts, produces accurate transcripts, and — given
    transcripts of the user's own past videos — writes a new script that a reader can
@@ -90,8 +96,10 @@ against the real running product — actual pixels, actual network responses:
 2. **The player test**: A 20-question gauntlet spanning current meta, the ban list,
    card rulings/text, prices and price trends, tournament results, and legal
    deckbuilding. ≥19 answers factually correct with working citations, verified against
-   live sources by the fresh-context checker. Write the gauntlet so that a model
-   answering from memory alone would fail it (post-cutoff facts, live numbers).
+   live sources by the fresh-context checker. The gauntlet is *authored by a
+   fresh-context sub-agent*, not by you (you may add questions, never remove), and
+   written so that a model answering from memory alone would fail it (post-cutoff
+   facts, live numbers).
 3. **The second-game test**: Add one more TCG (your choice — the dossier maps the APIs)
    by writing only a new adapter and config. Zero core diffs. Then it passes its own
    version of test 2 at the same threshold. This is what proves "and TCG in general."
@@ -99,9 +107,12 @@ against the real running product — actual pixels, actual network responses:
    sub-agent driving the real UI cold, given only the kind of goal a real user has)
    completes the Cami workflow and three player-test tasks unaided, without hitting a
    dead end, an uncited claim, or a fabricated number.
-5. **The economics test**: A typical query completes in under 15 seconds and under
-   $0.05 in data-vendor fees at the cached steady state; the full Cami workflow under
-   $1. Measured, not estimated — print the receipts.
+5. **The economics test**: The median player-test gauntlet question completes in
+   under 15 seconds and under $0.10 all-in (data-vendor fees *plus* model inference)
+   at the cached steady state; the full Cami workflow under $1 in data-vendor fees,
+   with its model cost also measured and reported. Measured, not estimated — print
+   the receipts. (Vendor prices in the dossier came from search-indexed pages, not
+   live ones — re-verify them when you wire up billing.)
 
 ## How to run
 
@@ -115,12 +126,13 @@ against the real running product — actual pixels, actual network responses:
 - **Keep a running progress doc** (`PROGRESS.md` in the repo, updated every cycle:
   what passed, what failed, screenshots, current gap) so the owner can glance at state
   and steer without stopping you.
-- **Fan out where the work is parallel** — one sub-agent per data-source integration,
-  one per game adapter, a separate verifier per bar-test — and keep a single
-  integrator role that merges, runs everything, and keeps the whole thing green.
+- **Fan out where the work is parallel** and keep something responsible for
+  integration — the topology is yours. The only fixed role is the fresh-context
+  verifier: it exists for every bar-test, and it is never the thing that built what
+  it's checking.
 - **Build on what exists.** The dossier is your predecessor's trace: it already tells
   you which APIs are dead (TCGplayer), which are decaying (pokemontcg.io), which are
-  gold (Scryfall, Limitless, TCGCSV, Riftcodex), and where every landmine is. Do not
-  re-discover these the hard way.
+  reliable (Scryfall, Limitless, TCGCSV — and Riftcodex for dev use), and where every
+  landmine is. Do not re-discover these the hard way.
 
 Everything else — go.

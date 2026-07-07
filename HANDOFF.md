@@ -7,10 +7,11 @@ ones you'd ask. Read all of it before you write a line of code. The build prompt
 drives the work is `PROMPT.md`, sitting next to this file — this document is the
 dossier that prompt depends on.
 
-Everything factual below was verified against live sources in early July 2026.
-Sources are cited inline; things I could *not* verify are flagged. When this doc and
-the live world disagree, the live world wins — re-verify before relying on anything
-load-bearing.
+Everything factual below was checked in early July 2026 — against live sources where
+crawlers could reach them, and against search-indexed snapshots where sites blocked
+automated access (several key sites 403 crawlers; those spots are flagged inline).
+Things I could *not* verify are flagged. When this doc and the live world disagree,
+the live world wins — re-verify before relying on anything load-bearing.
 
 ---
 
@@ -21,11 +22,16 @@ load-bearing.
 Poncho (tryponcho.com, built by Merit Systems) won content creators over by being a
 chat agent that can touch live data ChatGPT and Claude can't: pay-per-use tools for
 social media data, transcription, and more, invoked from plain English. The canonical
-creator workflow — the one in the screenshot that started this project — is: give it
-creator handles → it finds their top posts by views/likes → transcribes the videos →
-helps you merge the winning script structures with your own voice and experience.
-Full-time creators call it their most-used tool precisely because it fills the
-"data that isn't available to Claude/ChatGPT" gap.
+creator workflow — the one that started this project, from a viral X post by
+full-time creator @camiinthisthang — is a 5-step loop: identify the top 3 creators
+in your niche → pass their handles to Poncho and ask for each one's 5 most
+viewed/liked posts → have it transcribe the videos into scripts → brain-dump your own
+take on each topic → have it merge the winning script structures with your own voice
+and experience. (Her documented testimony describes finding top videos "in a niche";
+per-handle top-post lookup is what the underlying vendor data supports rather than a
+named Poncho feature — either way, it's the workflow Poro must own.) Full-time
+creators call Poncho their most-used tool precisely because it fills the "data that
+isn't available to Claude/ChatGPT" gap.
 
 Nobody has built that for TCGs. Meanwhile:
 
@@ -192,7 +198,7 @@ TikTok/IG are architecturally ready but behind vendors.
 | **TikTok** | Vendor only: **ScrapeCreators** (primary; ~$10/5,000 credits ≈ $2/1k requests, prepaid, dedicated TikTok transcript endpoint), Apify (clockworks actor ~$1.70/1k results) or EnsembleData as standby | Official Display API only covers OAuth'd users' own videos; Research API is academics-only, 1k req/day, commercial use banned. There is no official path — everyone uses vendors. TikTok captions come as WebVTT tracks the vendors just fetch. |
 | **Instagram** | Same vendors | Official `business_discovery` only reads public Business/Creator accounts (~200 calls/hr) and view metrics have been unstable since Meta's April 2025 "views" migration. ScrapeCreators' IG transcript endpoint works under ~2-minute videos. Most hostile platform — ship it last. |
 | **Twitch** | Official Helix API | Standard OAuth; fine for "who's streaming Riftbound." |
-| Fallback STT | Whisper API ($0.006/min) / Deepgram Nova-3 (~$0.0043/min) / Groq Whisper Turbo (~$0.0006/min) | For videos with no caption track. A 60-second short costs well under a cent. Getting the *media* is the hard part, not the STT. |
+| Fallback STT | Whisper API ($0.006/min) / Deepgram Nova-3 (~$0.0043/min) / Groq Whisper Turbo (~$0.0006/min) | For videos with no caption track. A 60-second short costs well under a cent. Getting the *media* is the hard part, not the STT — and the media must also come through the vendors: never self-download with yt-dlp-style tools (downloading violates platform ToS and YouTube actively bot-blocks it; that risk is exactly what the vendors are paid to absorb). |
 
 ### 4e. Other games (for the second-game test and beyond)
 
@@ -252,7 +258,9 @@ is better than my guesses. What I am prescribing is the shape, because the shape
 the vision:
 
 ```
-┌─ Chat UI (web-first; simple; the agent is the product, not the chrome)
+┌─ Chat UI (simple; the agent is the product, not the chrome — surface
+│   choice is the builder's; I'd start web because that's where TCG
+│   players already live, but that's a suggestion, not a decision)
 ├─ Agent core: system prompt (Poro's brain — biggest file in the repo,
 │   treat as code: versioned, reviewed, eval-gated) + tool registry
 ├─ Tool layer: thin deterministic tools, generic vocabulary
@@ -282,7 +290,11 @@ Decisions I've already made and why (don't relitigate without new facts):
   retrieval of the user's own transcripts + prompt engineering. Poncho does the same
   (it's ordinary LLM work atop fetched transcripts, not a named feature).
 
-## 7. Cost model (steady state, verified vendor pricing)
+## 7. Cost model (steady state)
+
+*Caveat: vendor prices below come from search-indexed pricing pages as of July 2026 —
+the vendors' sites 403'd my crawlers, so re-verify against the live pages before
+budgeting real money. The economics test in `PROMPT.md` repeats this instruction.*
 
 - Creator lookup (TikTok/IG profile, ~100 posts): $0.05–$0.20 via ScrapeCreators-style
   per-request pricing. YouTube equivalent: ~free (a few quota units).
@@ -299,8 +311,10 @@ Decisions I've already made and why (don't relitigate without new facts):
 Each phase ends at `PROMPT.md`'s bar-tests, fresh-context-verified — no calendar
 estimates from me; the loop decides pace.
 
-- **Phase 0 — Foundation** (this is the one place the "ultracode/plan-first"
-  exception applies): agent core + tool registry + provider abstraction + cache +
+- **Phase 0 — Foundation** (this is the one place the plan-before-any-code
+  exception applies — and if your tooling has a heavyweight highest-effort mode,
+  the one place it earns its cost): agent core + tool registry + provider
+  abstraction + cache +
   eval harness (the 20-question gauntlet *runs in CI*; the system prompt is
   eval-gated). Get the skeleton right; everything after is adapters.
 - **Phase 1 — Riftbound player loop**: Riot API + Riftcodex crosswalk, riftDecks/
@@ -318,9 +332,10 @@ estimates from me; the loop decides pace.
   (median observed x402 endpoint price $0.028/call, 997K+ paid calls through
   AgentCash as of Apr 2026; agentcash.dev). Poro becomes both a product *and* the
   TCG data layer of the agentic web. Requires the Riot resale clarification (§5.1).
-  There's also an open-source harness in the same family (github.com/cesr/poncho-ai,
-  MIT, AGENT.md + skills/ conventions) if you want a self-hostable agent shell
-  instead of building the chat plumbing yourself — evaluate, don't assume.
+  There's also an open-source harness that shares the Poncho name and conventions
+  (github.com/cesr/poncho-ai, MIT, AGENT.md + skills/ conventions — its formal
+  relationship to Merit's hosted Poncho is unverified) if you want a self-hostable
+  agent shell instead of building the chat plumbing yourself — evaluate, don't assume.
 
 **Launch timing gift**: Vendetta releases July 31 2026 and Worlds is 2027. Day-one
 Vendetta coverage ("ask Poro anything about the new set") is the marketing moment;
@@ -328,19 +343,19 @@ work backward from it if you can.
 
 ## 9. Keys, accounts, budgets
 
-Set up before starting (the build prompt assumes these exist as env vars; none are
-checked into this repo):
+Set up before starting (the build prompt assumes these exist as env vars under
+exactly these names; none are checked into this repo):
 
-| What | Where | Note |
+| Env var | Where to get it | Note |
 |---|---|---|
-| Anthropic API key | console.anthropic.com | The agent itself. |
-| Riot Developer Portal account + Riftbound key | developer.riotgames.com | Basic key auto-issued on login; register the app for production/Approved status early — approval is the longest legal pole. |
-| YouTube Data API key | Google Cloud console | File quota-extension audit form at Phase 2 start. |
-| ScrapeCreators account, prepaid credits | scrapecreators.com | Primary social vendor. ~$10/5k credits. |
-| Apify account | apify.com | Standby vendor (free tier: $5 credits/mo). |
-| Supadata (or TranscriptAPI) | supadata.ai | YouTube transcripts. 100 free credits/mo. |
-| Twitch app credentials | dev.twitch.tv | Helix API. |
-| **Data budget** | — | $200/mo development ceiling across all vendors. The agent spends freely inside it and reports spend in `PROGRESS.md`; it asks a human only to raise the ceiling. |
+| `ANTHROPIC_API_KEY` | console.anthropic.com | The agent itself. |
+| `RIOT_API_KEY` | developer.riotgames.com | Basic key auto-issued on login; register the app for production/Approved status early — approval is the longest legal pole. |
+| `YOUTUBE_API_KEY` | Google Cloud console | File quota-extension audit form at Phase 2 start. |
+| `SCRAPECREATORS_API_KEY` | scrapecreators.com | Primary social vendor; prepaid credits (~$10/5k per their search-indexed pricing — re-verify, see §7). |
+| `APIFY_TOKEN` | apify.com | Standby vendor (free tier: $5 credits/mo). |
+| `SUPADATA_API_KEY` | supadata.ai (or TranscriptAPI equivalent) | YouTube transcripts. 100 free credits/mo. |
+| `TWITCH_CLIENT_ID` / `TWITCH_CLIENT_SECRET` | dev.twitch.tv | Helix API. |
+| `DATA_BUDGET_MONTHLY_USD` | — | Set to `200`: the development ceiling across all vendors. The agent spends freely inside it and reports spend in `PROGRESS.md`; it asks a human only to raise the ceiling. |
 
 ## 10. Risks and what I'd already decided to do about them
 
