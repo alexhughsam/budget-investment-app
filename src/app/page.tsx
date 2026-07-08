@@ -35,38 +35,41 @@ export default async function DashboardPage() {
   return (
     <AppShell userName={user.name} householdName={household?.name ?? "Household"}>
       <div className="space-y-6">
-        {/* Net worth hero */}
-        <section className="card p-5 md:p-6">
+        {/* Net worth hero — the passbook page */}
+        <section className="ledger-page p-5 md:p-7">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <h1 className="text-sm font-semibold" style={{ color: "var(--ink-2)" }}>
-                Net worth
+              <h1 className="text-xs font-semibold uppercase tracking-[0.14em]" style={{ color: "var(--ink-3)", fontFamily: "var(--font-data)" }}>
+                Household net worth
               </h1>
-              <p className="text-4xl md:text-5xl font-bold tracking-tight tnum mt-1">{formatCents(netWorth.totalCents, display)}</p>
-              <p className="text-xs mt-2" style={{ color: "var(--ink-3)" }}>
-                {formatCents(netWorth.byCurrency.USD, "USD")} + {formatCents(netWorth.byCurrency.CAD, "CAD")} · converted at{" "}
-                {netWorth.fx.rate.toFixed(4)} ({netWorth.fx.source}, {netWorth.fx.date})
+              <p className="font-display text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight mt-2 tabular-nums">
+                {formatCents(netWorth.totalCents, display)}
+              </p>
+              <p className="text-xs mt-3 tnum" style={{ color: "var(--ink-2)" }}>
+                {formatCents(netWorth.byCurrency.USD, "USD")} &nbsp;+&nbsp; {formatCents(netWorth.byCurrency.CAD, "CAD")}
+                <span style={{ color: "var(--ink-3)" }}>
+                  {" "}
+                  · converted at {netWorth.fx.rate.toFixed(4)} ({netWorth.fx.source})
+                </span>
               </p>
             </div>
             <div className="flex flex-col items-end gap-2">
-              {netWorth.fx.stale && (
-                <span className="badge" style={{ background: "var(--surface-2)", color: "var(--serious)" }}>
-                  <Icon name="alert" className="w-3 h-3" /> FX rate stale — as of {netWorth.fx.date}
-                </span>
-              )}
+              <span className="stamp" style={{ color: netWorth.fx.stale ? "var(--serious)" : "var(--good)" }}>
+                {netWorth.fx.stale ? `FX stale · ${netWorth.fx.date}` : `FX ${netWorth.fx.date}`}
+              </span>
               {netWorth.anyStale && (
-                <span className="badge" style={{ background: "var(--surface-2)", color: "var(--serious)" }}>
-                  <Icon name="alert" className="w-3 h-3" /> Some balances are stale
+                <span className="stamp" style={{ color: "var(--serious)" }}>
+                  <Icon name="alert" className="w-3 h-3" /> stale balances
                 </span>
               )}
               {netWorth.missingCount > 0 && (
-                <span className="badge" style={{ background: "var(--surface-2)", color: "var(--ink-2)" }}>
-                  {netWorth.missingCount} account(s) have no balance yet
+                <span className="stamp" style={{ color: "var(--ink-3)" }}>
+                  {netWorth.missingCount} unrecorded
                 </span>
               )}
             </div>
           </div>
-          <div className="mt-4">
+          <div className="mt-5">
             <NetWorthChart points={history} currencySymbol={display === "USD" ? "US$" : "C$"} />
           </div>
         </section>
@@ -76,7 +79,7 @@ export default async function DashboardPage() {
           <section className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-bold">This month</h2>
-              <Link href="/budget" className="text-sm font-semibold" style={{ color: "var(--accent)" }}>
+              <Link href="/budget" className="text-sm font-semibold text-link">
                 Budget →
               </Link>
             </div>
@@ -99,7 +102,7 @@ export default async function DashboardPage() {
             {budget.uncategorizedCount > 0 && (
               <p className="text-xs mt-3" style={{ color: "var(--ink-3)" }}>
                 {budget.uncategorizedCount} transaction(s) still uncategorized —{" "}
-                <Link href="/transactions" className="font-semibold" style={{ color: "var(--accent)" }}>
+                <Link href="/transactions" className="font-semibold text-link">
                   fix that
                 </Link>
               </p>
@@ -132,7 +135,7 @@ export default async function DashboardPage() {
           <section className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-bold">Accounts</h2>
-              <Link href="/accounts/new" className="text-sm font-semibold inline-flex items-center gap-1" style={{ color: "var(--accent)" }}>
+              <Link href="/accounts/new" className="text-sm font-semibold inline-flex items-center gap-1 text-link">
                 <Icon name="plus" className="w-3.5 h-3.5" /> Add
               </Link>
             </div>

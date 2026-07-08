@@ -65,7 +65,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: Promi
         <div className="card p-4 mb-4 text-sm" style={{ color: "var(--ink-2)" }}>
           <span className="font-bold">{formatCents(view.uncategorizedCents, display)}</span> of spending is uncategorized (
           {view.uncategorizedCount} transaction(s)) and isn&apos;t reflected in the category bars below —{" "}
-          <Link href={`/transactions?month=${month}`} className="font-semibold" style={{ color: "var(--accent)" }}>
+          <Link href={`/transactions?month=${month}`} className="font-semibold text-link">
             categorize it
           </Link>
           .

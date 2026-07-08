@@ -31,11 +31,11 @@ export default async function SignupPage() {
       </ActionForm>
       <p className="text-sm mt-4" style={{ color: "var(--ink-2)" }}>
         Already have a household?{" "}
-        <Link href="/login" className="font-semibold" style={{ color: "var(--accent)" }}>
+        <Link href="/login" className="font-semibold text-link">
           Sign in
         </Link>{" "}
         ·{" "}
-        <Link href="/join" className="font-semibold" style={{ color: "var(--accent)" }}>
+        <Link href="/join" className="font-semibold text-link">
           Join with a code
         </Link>
       </p>

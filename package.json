@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
+    "@fontsource-variable/bricolage-grotesque": "^5.2.10",
+    "@fontsource-variable/instrument-sans": "^5.2.8",
+    "@fontsource-variable/spline-sans-mono": "^5.2.8",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^12.11.1",
     "drizzle-orm": "^0.45.2",

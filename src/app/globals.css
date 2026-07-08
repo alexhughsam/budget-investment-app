@@ -1,95 +1,143 @@
 @import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/instrument-sans";
+@import "@fontsource-variable/spline-sans-mono";
 
-/* Hearth theme — light/dark tokens. Chart colors follow the validated
-   reference palette (see dataviz skill); text never wears series color. */
+/* ------------------------------------------------------------------
+   Hearth — "passbook" design language.
+   Cover: deep spruce. Pages: warm ruled paper. Stamps: sparing red.
+   Display: Bricolage Grotesque · Body: Instrument Sans · Data: Spline Sans Mono.
+   Chart series colors come from the validated dataviz reference palette.
+------------------------------------------------------------------- */
+
 :root {
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --surface-2: #f0efec;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --ink-3: #898781;
-  --hairline: #e1e0d9;
-  --baseline: #c3c2b7;
-  --border-ring: rgba(11, 11, 11, 0.1);
-  --accent: #2a78d6;
-  --accent-ink: #ffffff;
+  /* pages */
+  --page: #f4f2ea;
+  --surface: #fdfcf8;
+  --surface-2: #ece9dd;
+  --ink: #21221d;
+  --ink-2: #565349;
+  --ink-3: #8b8778;
+  --hairline: #e0dccc;
+  --rule: #e6e2d3; /* passbook ruling */
+  --baseline: #c6c1ac;
+  --border-ring: rgba(33, 34, 29, 0.12);
+
+  /* cover */
+  --cover: #17453b;
+  --cover-2: #1d5347;
+  --cover-ink: #f1ecdb;
+  --cover-muted: #a8bfb4;
+
+  /* interactive */
+  --accent: #17453b;
+  --accent-ink: #f1ecdb;
+  --link: #1d5f4f;
+
+  /* status (validated) */
+  --good: #1d6b33;
+  --good-badge: #0ca30c;
+  --warning: #a96e0a;
+  --serious: #b05c33;
+  --critical: #b3382e;
+
+  /* chart (validated dataviz palette, light steps) */
+  --chart-line: #008300;
+  --chart-fill: rgba(0, 131, 0, 0.1);
   --series-1: #2a78d6;
   --series-2: #1baf7a;
-  --series-3: #eda100;
-  --series-4: #008300;
-  --series-5: #4a3aa7;
-  --good: #006300;
-  --good-badge: #0ca30c;
-  --warning: #fab219;
-  --serious: #ec835a;
-  --critical: #d03b3b;
-  --area-fill: rgba(42, 120, 214, 0.14);
+
+  /* type */
+  --font-display: "Bricolage Grotesque Variable", Georgia, serif;
+  --font-body: "Instrument Sans Variable", system-ui, sans-serif;
+  --font-data: "Spline Sans Mono Variable", ui-monospace, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --surface-2: #262624;
-    --ink: #ffffff;
-    --ink-2: #c3c2b7;
-    --ink-3: #898781;
-    --hairline: #2c2c2a;
-    --baseline: #383835;
-    --border-ring: rgba(255, 255, 255, 0.1);
-    --accent: #3987e5;
+    --page: #101512;
+    --surface: #18201c;
+    --surface-2: #222c27;
+    --ink: #f0eee4;
+    --ink-2: #bcb9a9;
+    --ink-3: #857f6e;
+    --hairline: #2a332e;
+    --rule: #212a25;
+    --baseline: #3a453f;
+    --border-ring: rgba(240, 238, 228, 0.1);
+    --cover: #0d1a16;
+    --cover-2: #16241f;
+    --cover-ink: #e9e4d2;
+    --cover-muted: #7e948a;
+    --accent: #2e7d68;
+    --accent-ink: #f4f1e4;
+    --link: #6fbfa5;
+    --good: #4fae63;
+    --warning: #d99a2b;
+    --serious: #d98b60;
+    --critical: #e06055;
+    --chart-line: #27a327;
+    --chart-fill: rgba(39, 163, 39, 0.14);
     --series-1: #3987e5;
     --series-2: #199e70;
-    --series-3: #c98500;
-    --series-4: #008300;
-    --series-5: #9085e9;
-    --good: #0ca30c;
-    --good-badge: #0ca30c;
-    --area-fill: rgba(57, 135, 229, 0.18);
   }
 }
 
 :root[data-theme="light"] {
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --surface-2: #f0efec;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --ink-3: #898781;
-  --hairline: #e1e0d9;
-  --baseline: #c3c2b7;
-  --border-ring: rgba(11, 11, 11, 0.1);
-  --accent: #2a78d6;
+  --page: #f4f2ea;
+  --surface: #fdfcf8;
+  --surface-2: #ece9dd;
+  --ink: #21221d;
+  --ink-2: #565349;
+  --ink-3: #8b8778;
+  --hairline: #e0dccc;
+  --rule: #e6e2d3;
+  --baseline: #c6c1ac;
+  --border-ring: rgba(33, 34, 29, 0.12);
+  --cover: #17453b;
+  --cover-2: #1d5347;
+  --cover-ink: #f1ecdb;
+  --cover-muted: #a8bfb4;
+  --accent: #17453b;
+  --accent-ink: #f1ecdb;
+  --link: #1d5f4f;
+  --good: #1d6b33;
+  --good-badge: #0ca30c;
+  --warning: #a96e0a;
+  --serious: #b05c33;
+  --critical: #b3382e;
+  --chart-line: #008300;
+  --chart-fill: rgba(0, 131, 0, 0.1);
   --series-1: #2a78d6;
   --series-2: #1baf7a;
-  --series-3: #eda100;
-  --series-4: #008300;
-  --series-5: #4a3aa7;
-  --good: #006300;
-  --good-badge: #0ca30c;
-  --area-fill: rgba(42, 120, 214, 0.14);
 }
 
 :root[data-theme="dark"] {
-  --page: #0d0d0d;
-  --surface: #1a1a19;
-  --surface-2: #262624;
-  --ink: #ffffff;
-  --ink-2: #c3c2b7;
-  --ink-3: #898781;
-  --hairline: #2c2c2a;
-  --baseline: #383835;
-  --border-ring: rgba(255, 255, 255, 0.1);
-  --accent: #3987e5;
+  --page: #101512;
+  --surface: #18201c;
+  --surface-2: #222c27;
+  --ink: #f0eee4;
+  --ink-2: #bcb9a9;
+  --ink-3: #857f6e;
+  --hairline: #2a332e;
+  --rule: #212a25;
+  --baseline: #3a453f;
+  --border-ring: rgba(240, 238, 228, 0.1);
+  --cover: #0d1a16;
+  --cover-2: #16241f;
+  --cover-ink: #e9e4d2;
+  --cover-muted: #7e948a;
+  --accent: #2e7d68;
+  --accent-ink: #f4f1e4;
+  --link: #6fbfa5;
+  --good: #4fae63;
+  --warning: #d99a2b;
+  --serious: #d98b60;
+  --critical: #e06055;
+  --chart-line: #27a327;
+  --chart-fill: rgba(39, 163, 39, 0.14);
   --series-1: #3987e5;
   --series-2: #199e70;
-  --series-3: #c98500;
-  --series-4: #008300;
-  --series-5: #9085e9;
-  --good: #0ca30c;
-  --good-badge: #0ca30c;
-  --area-fill: rgba(57, 135, 229, 0.18);
 }
 
 @theme inline {
@@ -105,32 +153,82 @@
   --color-warning: var(--warning);
   --color-serious: var(--serious);
   --color-critical: var(--critical);
-  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-body);
 }
 
 body {
   background: var(--page);
   color: var(--ink);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  font-size: 15px;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+/* Data voice: dates, amounts, codes */
+.tnum {
+  font-family: var(--font-data);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border-ring);
-  border-radius: 14px;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(23, 34, 29, 0.04);
+}
+
+/* The signature: a ruled passbook page */
+.ledger-page {
+  background: var(--surface);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 27px,
+    var(--rule) 27px,
+    var(--rule) 28px
+  );
+  border: 1px solid var(--border-ring);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(23, 34, 29, 0.04);
+}
+
+/* Rubber-stamp chip: dates, staleness, FX provenance */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-data);
+  font-size: 0.66rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.55rem;
+  border: 1.5px solid currentColor;
+  border-radius: 4px;
+  transform: rotate(-1.2deg);
+  opacity: 0.9;
 }
 
 .hairline-b {
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px dashed var(--hairline);
 }
 
 .input {
   background: var(--surface);
   border: 1px solid var(--baseline);
-  border-radius: 8px;
-  padding: 0.5rem 0.75rem;
+  border-radius: 7px;
+  padding: 0.5rem 0.7rem;
   font-size: 0.875rem;
+  font-family: var(--font-body);
   color: var(--ink);
   width: 100%;
 }
@@ -145,21 +243,32 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.375rem;
-  border-radius: 8px;
-  padding: 0.5rem 0.9rem;
+  border-radius: 7px;
+  padding: 0.5rem 0.95rem;
   font-size: 0.875rem;
   font-weight: 600;
+  font-family: var(--font-body);
   background: var(--accent);
-  color: var(--accent-ink, #fff);
+  color: var(--accent-ink);
   cursor: pointer;
   border: 1px solid transparent;
+  transition: filter 120ms ease, transform 120ms ease;
 }
 .btn:hover {
-  filter: brightness(1.08);
+  filter: brightness(1.12);
+}
+.btn:active {
+  transform: translateY(1px);
 }
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+.btn:focus-visible,
+a:focus-visible,
+.input:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
 }
 .btn-ghost {
   background: transparent;
@@ -171,18 +280,60 @@ body {
   filter: none;
 }
 
-.tnum {
-  font-variant-numeric: tabular-nums;
-}
-
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  border-radius: 999px;
-  padding: 0.1rem 0.55rem;
-  font-size: 0.7rem;
+  border-radius: 4px;
+  padding: 0.12rem 0.5rem;
+  font-family: var(--font-data);
+  font-size: 0.66rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+a {
+  color: inherit;
+}
+.text-link {
+  color: var(--link);
+  font-weight: 600;
+}
+
+/* Chart draw-in — the dashboard's one orchestrated moment */
+@keyframes hearth-draw {
+  from {
+    stroke-dashoffset: var(--draw-length, 1600);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.chart-draw {
+  stroke-dasharray: var(--draw-length, 1600);
+  animation: hearth-draw 900ms ease-out forwards;
+}
+@keyframes hearth-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.chart-fade {
+  animation: hearth-fade 500ms ease-out 500ms backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart-draw,
+  .chart-fade {
+    animation: none;
+    stroke-dasharray: none;
+  }
+  .btn {
+    transition: none;
+  }
 }
 
 .prose-memo h1,

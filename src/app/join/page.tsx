@@ -31,7 +31,7 @@ export default async function JoinPage() {
       </ActionForm>
       <p className="text-sm mt-4" style={{ color: "var(--ink-2)" }}>
         Starting fresh instead?{" "}
-        <Link href="/signup" className="font-semibold" style={{ color: "var(--accent)" }}>
+        <Link href="/signup" className="font-semibold text-link">
           Create a household
         </Link>
       </p>

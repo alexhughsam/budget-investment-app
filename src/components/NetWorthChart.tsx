@@ -21,7 +21,8 @@ export function NetWorthChart({ points, currencySymbol }: { points: Point[]; cur
     const lo = Math.min(...values);
     const hi = Math.max(...values);
     const span = hi - lo || Math.abs(hi) || 1;
-    const min = lo - span * 0.08;
+    // Don't pad the axis below zero when every value is positive.
+    const min = lo >= 0 ? Math.max(0, lo - span * 0.08) : lo - span * 0.08;
     const max = hi + span * 0.08;
     const xs = points.map((_, i) => PAD.l + (i * (W - PAD.l - PAD.r)) / Math.max(points.length - 1, 1));
     const ys = values.map((v) => PAD.t + (1 - (v - min) / (max - min)) * (H - PAD.t - PAD.b));
@@ -53,7 +54,6 @@ export function NetWorthChart({ points, currencySymbol }: { points: Point[]; cur
     setHover(best);
   }
 
-  const gridYs = [0.25, 0.5, 0.75].map((f) => PAD.t + f * (H - PAD.t - PAD.b));
 
   return (
     <div className="relative">
@@ -66,12 +66,10 @@ export function NetWorthChart({ points, currencySymbol }: { points: Point[]; cur
         onPointerMove={onMove}
         onPointerLeave={() => setHover(null)}
       >
-        {gridYs.map((y) => (
-          <line key={y} x1={PAD.l} x2={W - PAD.r} y1={y} y2={y} stroke="var(--hairline)" strokeWidth="1" />
-        ))}
+        {/* The ledger-page ruling provides the horizontal rhythm; the chart adds only its baseline. */}
         <line x1={PAD.l} x2={W - PAD.r} y1={H - PAD.b} y2={H - PAD.b} stroke="var(--baseline)" strokeWidth="1" />
-        <path d={area} fill="var(--area-fill)" />
-        <path d={path} fill="none" stroke="var(--series-1)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <path d={area} fill="var(--chart-fill)" className="chart-fade" />
+        <path d={path} fill="none" stroke="var(--chart-line)" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" className="chart-draw" style={{ '--draw-length': 1600 } as React.CSSProperties} />
         {/* first/last date labels */}
         <text x={PAD.l} y={H - 6} fontSize="10" fill="var(--ink-3)">
           {points[0].date}
@@ -89,7 +87,7 @@ export function NetWorthChart({ points, currencySymbol }: { points: Point[]; cur
         {hover !== null && (
           <g>
             <line x1={xs[hover]} x2={xs[hover]} y1={PAD.t} y2={H - PAD.b} stroke="var(--baseline)" strokeWidth="1" strokeDasharray="3 3" />
-            <circle cx={xs[hover]} cy={ys[hover]} r="4.5" fill="var(--series-1)" stroke="var(--surface)" strokeWidth="2" />
+            <circle cx={xs[hover]} cy={ys[hover]} r="4.5" fill="var(--chart-line)" stroke="var(--surface)" strokeWidth="2" />
           </g>
         )}
       </svg>
